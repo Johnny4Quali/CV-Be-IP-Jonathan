@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jonathan Lamourette</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: #080c10;
+  color: #c9d8e0;
+  font-family: 'Rajdhani', sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* HERO */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  z-index: 2;
+  overflow: hidden;
+}
+.hero-bg-text {
+  position: absolute;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(60px, 12vw, 160px);
+  font-weight: 700;
+  color: rgba(0,212,255,0.04);
+  letter-spacing: 0.3em;
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.hero-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(42px, 8vw, 96px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  animation: fadeUp 0.8s ease 0.3s both;
+}
+.hero-name span {
+  color: #00d4ff;
+  text-shadow: 0 0 30px rgba(0,212,255,0.5);
+}
+.hero-subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px, 2vw, 15px);
+  color: #4a6070;
+  letter-spacing: 0.2em;
+  margin-top: 20px;
+  animation: fadeUp 0.8s ease 0.5s both;
+}
+.blink {
+  color: #00d4ff;
+  animation: blink 1s step-end infinite;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #4a6070;
+  letter-spacing: 0.2em;
+  animation: fadeUp 0.8s ease 1s both;
+}
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid #00d4ff;
+  border-bottom: 1px solid #00d4ff;
+  transform: rotate(45deg);
+  animation: bounce 1.5s ease infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes bounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes scanline { 0%{top:0;opacity:0} 5%{opacity:0.6} 95%{opacity:0.6} 100%{top:100vh;opacity:0} }
+@keyframes barSweep { 0%{left:-62vw;opacity:0.12} 60%{opacity:0.12} 100%{left:110vw;opacity:0} }
+
+.scanline {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #4a6070;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.nav-dot.active {
+  background: #00d4ff;
+  border-color: #00d4ff;
+  box-shadow: 0 0 10px rgba(0,212,255,0.6);
+}
+
+/* SECTIONS */
+.section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 40px;
+  z-index: 2;
+}
+.section-inner {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.section-inner.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.section-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #00d4ff;
+  letter-spacing: 0.3em;
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+.section-title .ac { color: #00d4ff; }
+.divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #00d4ff, transparent);
+  margin: 20px 0 40px;
+}
+
+/* CARDS */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1100px; }
+.card {
+  background: #0d1117;
+  border: 1px solid #1e3a4a;
+  border-radius: 4px;
+  padding: 28px;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: #00d4ff;
+}
+.card-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #00d4ff;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+
+/* PRESENTATION */
+.main-text {
+  font-size: clamp(16px, 2.5vw, 20px);
+  line-height: 1.8;
+  max-width: 700px;
+  margin-bottom: 40px;
+}
+.main-text strong { color: #00d4ff; font-weight: 600; }
+.tags { display: flex; flex-wrap: wrap; gap: 10px; }
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 6px 14px;
+  border: 1px solid #1e3a4a;
+  border-radius: 2px;
+  color: #00ff9d;
+  letter-spacing: 0.1em;
+  background: rgba(0,255,157,0.04);
+}
+
+/* LANGUES */
+.lang-wrap { margin-bottom: 24px; }
+.lang-row { display: flex; justify-content: space-between; font-size: 14px; font-family: 'Share Tech Mono', monospace; margin-bottom: 6px; }
+.lang-row .lv { color: #00d4ff; }
+.lang-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+.lang-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #00d4ff, #00ff9d); }
+.dip { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.dip:last-child { border-bottom: none; }
+.dot { width: 8px; height: 8px; background: #00d4ff; border-radius: 50%; flex-shrink: 0; margin-top: 6px; box-shadow: 0 0 8px #00d4ff; }
+.dip-text { font-size: 15px; line-height: 1.6; }
+.dip-text strong { color: #ffffff; display: block; font-size: 16px; }
+.dip-text small { font-family: 'Share Tech Mono', monospace; color: #4a6070; font-size: 11px; }
+
+/* COMPETENCES */
+.skill-cat { margin-bottom: 32px; }
+.skill-cat-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #ff6b35;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,107,53,0.3);
+}
+.pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 5px 12px;
+  border: 1px solid #1e3a4a;
+  border-radius: 2px;
+  color: #c9d8e0;
+  background: rgba(255,255,255,0.02);
+  letter-spacing: 0.1em;
+}
+.soft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 15px;
+}
+.soft::before { content: '//'; font-family: 'Share Tech Mono', monospace; color: #00ff9d; font-size: 12px; }
+
+/* TIMELINE */
+.tl { position: relative; max-width: 800px; }
+.tl::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, #00d4ff, transparent); }
+.tl-item { padding-left: 40px; padding-bottom: 48px; position: relative; }
+.tl-item::before { content: ''; position: absolute; left: -4px; top: 6px; width: 9px; height: 9px; border: 1px solid #00d4ff; background: #080c10; border-radius: 50%; box-shadow: 0 0 12px rgba(0,212,255,0.5); }
+.tl-date { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #00d4ff; letter-spacing: 0.2em; margin-bottom: 8px; }
+.tl-title { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+.tl-sub { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #4a6070; letter-spacing: 0.15em; margin-bottom: 14px; }
+.tl-body { font-size: 15px; line-height: 1.8; }
+
+/* CONTACT */
+.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 800px; margin-bottom: 40px; }
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #0d1117;
+  border: 1px solid #1e3a4a;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.contact-card:hover { border-color: #00d4ff; transform: translateY(-3px); }
+.c-icon { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: #00d4ff; width: 32px; text-align: center; }
+.c-lbl { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #4a6070; letter-spacing: 0.2em; text-transform: uppercase; }
+.c-val { font-size: 15px; color: #ffffff; margin-top: 2px; font-weight: 600; }
+
+/* SLIDE DECO */
+#slideDeco { position: fixed; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+.sbar { position: absolute; width: 60vw; border-radius: 3px; animation: barSweep 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+
+@media (max-width: 600px) {
+  .section { padding: 60px 20px; }
+  nav { right: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div id="slideDeco"></div>
+
+<nav id="mainNav">
+  <div class="nav-dot active" data-section="hero"></div>
+  <div class="nav-dot" data-section="presentation"></div>
+  <div class="nav-dot" data-section="langues"></div>
+  <div class="nav-dot" data-section="competences"></div>
+  <div class="nav-dot" data-section="experiences"></div>
+  <div class="nav-dot" data-section="contact"></div>
+  <div class="nav-dot" data-section="hobbies"></div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">NETWORK</div>
+  <h1 class="hero-name">JONATHAN<br><span>LAMOURETTE</span></h1>
+  <p class="hero-subtitle">STAGIAIRE APPRENANT &mdash; RÉSEAU &amp; SYSTÈMES<span class="blink">_</span></p>
+  <div class="scroll-hint"><span>DÉFILER</span><div class="scroll-arrow"></div></div>
+</section>
+
+<!-- 01 PRÉSENTATION -->
+<section class="section" id="presentation">
+  <div class="section-inner">
+    <div class="section-num">// 01</div>
+    <h2 class="section-title">PRÉSEN<span class="ac">TATION</span></h2>
+    <div class="divider"></div>
+    <p class="main-text">
+      Actuellement en première année de formation IFAPME en gestion réseau et systèmes, je cherche un environnement où les technologies sont au cœur de l'activité. Mon objectif est clair : atteindre le niveau d'administrateur réseau et décrocher les certifications <strong>CCNA puis CCNP</strong>. Ce stage est l'étape concrète vers cette trajectoire.
+    </p>
+  </div>
+</section>
+
+<!-- 02 LANGUES & DIPLÔMES -->
+<section class="section" id="langues">
+  <div class="section-inner">
+    <div class="section-num">// 02</div>
+    <h2 class="section-title">LANGUES &amp; <span class="ac">DIPLÔMES</span></h2>
+    <div class="divider"></div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-lbl">[ LANGUES_PARLÉES ]</div>
+        <div class="lang-wrap">
+          <div class="lang-row"><span>Français</span><span class="lv">LANGUE MATERNELLE</span></div>
+          <div class="lang-track"><div class="lang-fill" style="width:100%"></div></div>
+        </div>
+        <div class="lang-wrap">
+          <div class="lang-row"><span>Anglais</span><span class="lv">C1 — WALLANGUES</span></div>
+          <div class="lang-track"><div class="lang-fill" style="width:92%"></div></div>
+        </div>
+        <div class="lang-wrap">
+          <div class="lang-row"><span>Néerlandais</span><span class="lv">AVANCÉ</span></div>
+          <div class="lang-track"><div class="lang-fill" style="width:78%"></div></div>
+        </div>
+        <p style="margin-top:20px;font-size:13px;color:#4a6070;font-family:'Share Tech Mono',monospace;line-height:1.7;">Pratique courante, voire quotidienne,<br>de l'anglais et du néerlandais.</p>
+      </div>
+      <div class="card">
+        <div class="card-lbl">[ DIPLÔMES_ET_FORMATIONS ]</div>
+        <div class="dip">
+          <div class="dot"></div>
+          <div class="dip-text"><strong>Formation IFAPME — Gestion Réseau &amp; Systèmes</strong><small>DEPUIS SEPT. 2025 — EN COURS</small>Formation en alternance 3 ans · Brevets CCNA &amp; CCNP CISCO</div>
+        </div>
+        <div class="dip">
+          <div class="dot"></div>
+          <div class="dip-text"><strong>Networking Basics Certificate</strong><small>CISCO</small></div>
+        </div>
+        <div class="dip">
+          <div class="dot"></div>
+          <div class="dip-text"><strong>CESS Filière générale</strong><small>OPTION SCIENTIFIQUE + IMMERSION ANGLAIS</small></div>
+        </div>
+        <div class="dip">
+          <div class="dot"></div>
+          <div class="dip-text"><strong>C1 Test Wallangues</strong><small>ANGLAIS — CERTIFIÉ</small></div>
+        </div>
+        <div class="dip">
+          <div class="dot"></div>
+          <div class="dip-text"><strong>BEPS</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 COMPÉTENCES -->
+<section class="section" id="competences">
+  <div class="section-inner">
+    <div class="section-num">// 03</div>
+    <h2 class="section-title">COMPÉ<span class="ac">TENCES</span></h2>
+    <div class="divider"></div>
+    <div class="grid" style="max-width:1100px;">
+      <div class="card" style="grid-column:span 2;">
+        <div class="card-lbl">[ INFORMATIQUE ]</div>
+        <div class="skill-cat">
+          <div class="skill-cat-title">// Point fort — Équipements réseau IP</div>
+          <div class="pills">
+            <span class="pill" style="border-color:#00d4ff;color:#00d4ff;">Switchs Layer 3</span><span class="pill" style="border-color:#00d4ff;color:#00d4ff;">Interfaces web d'admin</span><span class="pill" style="border-color:#00d4ff;color:#00d4ff;">Caméras IP HIKvision</span><span class="pill" style="border-color:#00d4ff;color:#00d4ff;">iVMS / SADP / HikCentral</span><span class="pill" style="border-color:#00d4ff;color:#00d4ff;">Contrôle d'accès</span><span class="pill" style="border-color:#00d4ff;color:#00d4ff;">Gestion cartes réseau</span>
+          </div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title">// Réseau &amp; Infrastructure</div>
+          <div class="pills">
+            <span class="pill" style="border-color:#00ff9d;color:#00ff9d;">Networking Basics Certificate — Cisco</span><span class="pill">Packet Tracer</span><span class="pill">VLANs (notions)</span><span class="pill">VPN Ubiquiti</span><span class="pill">Firewall (bases)</span><span class="pill">Teltonika (VPN, WLAN, 4G)</span><span class="pill">Sertissage RJ45</span>
+          </div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title">// Linux &amp; Virtualisation</div>
+          <div class="pills">
+            <span class="pill">Rocky Linux 9 (bases)</span><span class="pill">Linux Mint (bases)</span><span class="pill">VirtualBox</span><span class="pill">VM : Windows 11</span><span class="pill">VM : Windows Server 2025</span><span class="pill">VM : Ubuntu</span><span class="pill">VM : Rocky Linux 9</span><span class="pill">Raspberry Pi 5 — node + hébergement web</span>
+          </div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title">// Systèmes Windows</div>
+          <div class="pills">
+            <span class="pill">Windows 10/11</span><span class="pill">Kiosques Windows</span><span class="pill">Registry</span><span class="pill">Planificateur de tâches</span><span class="pill">Windows Server (bases)</span><span class="pill">DNS &amp; DHCP (bases)</span><span class="pill">Active Directory (bases)</span>
+          </div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title">// Outils &amp; Divers</div>
+          <div class="pills">
+            <span class="pill">Clés bootables</span><span class="pill">Veeam Backup</span><span class="pill">Résolution hardware</span><span class="pill">Trikker</span><span class="pill">Permis B</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">[ SOFT_SKILLS ]</div>
+        <div style="margin-top:8px;">
+          <div class="soft">Anglais &amp; néerlandais au quotidien</div>
+          <div class="soft">Contact client (années d'horeca)</div>
+          <div class="soft">À l'écoute des besoins</div>
+          <div class="soft">Gestion des demandes directes</div>
+          <div class="soft">Résolution créative de problèmes</div>
+          <div class="soft">Travail rigoureux et autonome</div>
+          <div class="soft">Bonne humeur &amp; esprit d'équipe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 EXPÉRIENCES -->
+<section class="section" id="experiences">
+  <div class="section-inner">
+    <div class="section-num">// 04</div>
+    <h2 class="section-title">EXPÉ<span class="ac">RIENCES</span></h2>
+    <div class="divider"></div>
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-date">SEPT. 2025 — EN COURS</div>
+        <div class="tl-title">Formation IFAPME — Réseau &amp; Systèmes</div>
+        <div class="tl-sub">ALTERNANCE · PREMIÈRE ANNÉE EN COURS</div>
+        <div class="tl-body">Formation pratique sur les labos systèmes, systèmes d'exploitation et protocoles réseau. 3 ans (2 ans + 1 spécialisation) visant le niveau d'administrateur réseau et les brevets <strong style="color:#00d4ff">CCNA &amp; CCNP CISCO</strong>.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2025 · STAGE PREMIÈRE ANNÉE IFAPME</div>
+        <div class="tl-title">Stage — Systèmes de Sécurité</div>
+        <div class="tl-sub">TEMPS PLEIN · 38H/SEMAINE</div>
+        <div class="tl-body">Société spécialisée dans l'installation de systèmes de sécurité (caméras IP, contrôle d'accès). Configuration HIKvision, câblage réseau et déploiement sur site. Environnement terrain qui m'a appris à <strong style="color:#00d4ff;">diagnostiquer et résoudre seul</strong>, et confirmé mon appétit pour des défis techniques plus poussés.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2016 — 2025</div>
+        <div class="tl-title">Plusieurs années en Restauration</div>
+        <div class="tl-sub">SERVICE EN SALLE · BAR · COMMIS · GASTRONOMIQUE</div>
+        <div class="tl-body">Nombreuses expériences dans différentes maisons gastronomiques. Fort sens du service client, écoute, rigueur et gestion de situations imprévues.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 CONTACT -->
+<section class="section" id="contact">
+  <div class="section-inner">
+    <div class="section-num">// 05</div>
+    <h2 class="section-title">ME CON<span class="ac">TACTER</span></h2>
+    <div class="divider"></div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="c-icon">@</div>
+        <div><div class="c-lbl">Email</div><div class="c-val">ljonath2000&#64;gmail.com</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="c-icon">&#9990;</div>
+        <div><div class="c-lbl">Téléphone</div><div class="c-val">+32 479 66 25 81</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="c-icon">in</div>
+        <div><div class="c-lbl">LinkedIn</div><div class="c-val">/jonathan-lamourette</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="c-icon">&#8962;</div>
+        <div><div class="c-lbl">Adresse</div><div class="c-val">Rue Gilbert Detry 15A<br>1367 Gérompont</div></div>
+      </div>
+    </div>
+    <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#4a6070;letter-spacing:0.15em;">// Disponible pour un stage 2ème année IFAPME — motivé, curieux, et prêt à m'impliquer.</p>
+  </div>
+</section>
+
+<!-- 06 UN PEU PLUS SUR MOI -->
+<section class="section" id="hobbies" style="min-height:auto;padding:60px 40px;">
+  <div class="section-inner">
+    <div class="section-num">// 06</div>
+    <h2 class="section-title" style="font-size:clamp(22px,4vw,40px);">UN PEU PLUS <span class="ac">SUR MOI</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:clamp(15px,2vw,18px);line-height:1.9;max-width:680px;color:#c9d8e0;margin-bottom:28px;">
+      25 ans, sportif dans l'âme — snowboard, sports nautiques et tout ce qui se passe en extérieur. Grand amateur de foot, passionné de musique autant à l'écoute qu'à la pratique (batterie, guitare, basse, piano). J'aime aussi cuisiner, et je préfère les bons moments simples aux grandes soirées.
+    </p>
+    <div class="tags">
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Batterie (+10 ans)</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Guitare basse</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Guitare</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Piano</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Production musicale</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Snowboard</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Surf</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Football</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Sports nautiques</span>
+      <span class="tag" style="color:#4a6070;border-color:#1e3a4a;font-size:11px;">Cuisine</span>
+    </div>
+  </div>
+</section>
+
+<section style="padding:30px 40px 50px;z-index:2;position:relative;">
+  <p style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#2a3a44;letter-spacing:0.12em;line-height:1.9;max-width:700px;border-top:1px solid #1a2a34;padding-top:24px;">
+    // Ce CV a été mis en forme avec l'aide de <span style="color:#00d4ff;">Claude (Anthropic)</span>.<br>
+    // Il ne reflète pas mes compétences en HTML.<br>
+    // L'objectif est simplement de rendre la lecture plus agréable qu'un PDF classique.
+  </p>
+</section>
+
+<script>
+var SECTIONS = ['hero','presentation','langues','competences','experiences','contact','hobbies'];
+var COLORS = [
+  'rgba(0,212,255,0.1)',
+  'rgba(0,255,157,0.1)',
+  'rgba(255,107,53,0.1)',
+  'rgba(0,212,255,0.1)',
+  'rgba(0,255,157,0.1)',
+  'rgba(0,212,255,0.1)',
+  'rgba(0,255,157,0.1)'
+];
+var currentIdx = 0;
+var dots = document.querySelectorAll('.nav-dot');
+
+function updateNav(idx) {
+  currentIdx = idx;
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].classList.toggle('active', i === idx);
+  }
+}
+
+for (var i = 0; i < dots.length; i++) {
+  (function(index) {
+    dots[index].addEventListener('click', function() {
+      var el = document.getElementById(SECTIONS[index]);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  })(i);
+}
+
+function triggerBars(idx) {
+  var container = document.getElementById('slideDeco');
+  container.innerHTML = '';
+  var color = COLORS[idx] || COLORS[0];
+  var vh = window.innerHeight;
+  var bars = [
+    { top: Math.round(vh * 0.15), h: 60, delay: '0s' },
+    { top: Math.round(vh * 0.38), h: 40, delay: '0.07s' },
+    { top: Math.round(vh * 0.55), h: 80, delay: '0.14s' },
+    { top: Math.round(vh * 0.72), h: 35, delay: '0.05s' },
+    { top: Math.round(vh * 0.85), h: 55, delay: '0.11s' }
+  ];
+  for (var j = 0; j < bars.length; j++) {
+    var b = bars[j];
+    var el = document.createElement('div');
+    el.className = 'sbar';
+    el.style.top = b.top + 'px';
+    el.style.height = b.h + 'px';
+    el.style.background = color;
+    el.style.animationDelay = b.delay;
+    container.appendChild(el);
+  }
+  setTimeout(function() { container.innerHTML = ''; }, 1200);
+}
+
+if ('IntersectionObserver' in window) {
+  var observer = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        var idx = SECTIONS.indexOf(id);
+        if (idx !== -1 && idx !== currentIdx) {
+          triggerBars(idx);
+          updateNav(idx);
+        }
+        var inner = entry.target.querySelector('.section-inner');
+        if (inner) inner.classList.add('visible');
+      }
+    }
+  }, { threshold: 0.1 });
+
+  for (var i = 0; i < SECTIONS.length; i++) {
+    var el = document.getElementById(SECTIONS[i]);
+    if (el) observer.observe(el);
+  }
+} else {
+  // Fallback for very old browsers: show everything
+  var inners = document.querySelectorAll('.section-inner');
+  for (var i = 0; i < inners.length; i++) {
+    inners[i].classList.add('visible');
+  }
+}
+</script>
+</body>
+</html>
